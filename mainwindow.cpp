@@ -27,6 +27,17 @@ void MainWindow::on_btnOpenBitmap_clicked()
      openBitmap(bmpFilePath);
 }
 
+void MainWindow::on_btnOpenOverlay_clicked()
+{
+
+}
+
+void MainWindow::on_btnSaveBitmap_clicked()
+{
+
+}
+
+
 void MainWindow::openBitmap(QString filePath) {
     std::ifstream bmpFile(filePath.toStdString(), std::ifstream::binary);
 
@@ -82,5 +93,5 @@ void MainWindow::createQImage(BITMAPINFOHEADER *bitmapInfoHeader, std::vector<QC
 
     QGraphicsScene *scene = new QGraphicsScene;
     scene->addPixmap(pixImg);
-    ui->graphicsView->setScene(scene);
+    ui->gfxBitmap->setScene(scene);
 }

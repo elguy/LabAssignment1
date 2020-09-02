@@ -19,6 +19,10 @@ public:
 private slots:
     void on_btnOpenBitmap_clicked();
 
+    void on_btnOpenOverlay_clicked();
+
+    void on_btnSaveBitmap_clicked();
+
 private:
     void openBitmap(QString filePath);
     void createQImage(BITMAPINFOHEADER *bitmapInfoHeader, std::vector<QColor> BITMAPCOLORTABLE, std::vector<unsigned char> BITMAPPIXELINDICES);

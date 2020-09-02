@@ -62,26 +62,26 @@ void MainWindow::openBitmap(QString filePath) {
 
         int colorTableEntries = getColorTableEntries(bitmapInfoHeader);
 
-        std::vector<QColor> BITMAPCOLORTABLE = readBitmapColorTable(bmpFile, colorTableEntries);
+        std::vector<QColor> bitmapColorTable = readBitmapColorTable(bmpFile, colorTableEntries);
 
-        std::vector<unsigned char> BITMAPPIXELINDICES = readBitmapPixelIndices(bmpFile, bitmapInfoHeader);
+        std::vector<unsigned char> bitmapPixelIndices = readBitmapPixelIndices(bmpFile, bitmapInfoHeader);
 
-        createQImage(bitmapInfoHeader, BITMAPCOLORTABLE, BITMAPPIXELINDICES);
+        createQImage(bitmapInfoHeader, bitmapColorTable, bitmapPixelIndices);
     } else {
 
     }
 }
 
-void MainWindow::createQImage(BITMAPINFOHEADER *bitmapInfoHeader, std::vector<QColor> BITMAPCOLORTABLE, std::vector<unsigned char> BITMAPPIXELINDICES) {
+void MainWindow::createQImage(BITMAPINFOHEADER *bitmapInfoHeader, std::vector<QColor> bitmapColorTable, std::vector<unsigned char> bitmapPixelIndices) {
     QImage qImg(bitmapInfoHeader->biWidth, bitmapInfoHeader->biHeight, QImage::Format_RGB32);
 
     int index = 0;
     for(int i = bitmapInfoHeader->biHeight - 1; i >= 0; i--) {
         for (int j = 0; j < bitmapInfoHeader->biWidth; j++) {
 
-            unsigned char pixelIndex = BITMAPPIXELINDICES[index];
+            unsigned char pixelIndex = bitmapPixelIndices[index];
 
-            QColor rgb = BITMAPCOLORTABLE[pixelIndex];
+            QColor rgb = bitmapColorTable[pixelIndex];
 
 
             qImg.setPixel(j, i, rgb.rgba());

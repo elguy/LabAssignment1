@@ -21,7 +21,7 @@ private slots:
 
 private:
     void openBitmap(QString filePath);
-    void createQImage(BITMAPINFOHEADER *bitmapInfoHeader, std::vector<RGBQUAD *> BITMAPCOLORTABLE, std::vector<unsigned char> BITMAPPIXELINDICES);
+    void createQImage(BITMAPINFOHEADER *bitmapInfoHeader, std::vector<QColor> BITMAPCOLORTABLE, std::vector<unsigned char> BITMAPPIXELINDICES);
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

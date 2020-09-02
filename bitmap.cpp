@@ -72,8 +72,8 @@ BITMAPINFOHEADER* readBitmapInfoHeader(std::ifstream& is) {
     return bitmapInfoHeader;
 }
 
-std::vector<RGBQUAD *> readBitmapColorTable(std::ifstream& is, int colorTableEntries) {
-    std::vector<RGBQUAD *> BITMAPCOLORTABLE;
+std::vector<QColor> readBitmapColorTable(std::ifstream& is, int colorTableEntries) {
+    std::vector<QColor> BITMAPCOLORTABLE;
 
     unsigned char rgbBlue;
     unsigned char rgbGreen;
@@ -86,13 +86,10 @@ std::vector<RGBQUAD *> readBitmapColorTable(std::ifstream& is, int colorTableEnt
         is.read(reinterpret_cast<char *>(&rgbRed), sizeof(rgbRed));
         is.read(reinterpret_cast<char *>(&rgbReserved), sizeof(rgbReserved));
 
-        auto *rgbQuad = (RGBQUAD *) malloc(sizeof(RGBQUAD));
-        rgbQuad->rgbBlue = rgbBlue;
-        rgbQuad->rgbGreen = rgbGreen;
-        rgbQuad->rgbRed = rgbRed;
-        rgbQuad->rgbReserved = rgbReserved;
+        QColor qColor(rgbRed, rgbGreen, rgbBlue);
+        //rgbQuad->rgbReserved = rgbReserved;
 
-        BITMAPCOLORTABLE.push_back(rgbQuad);
+        BITMAPCOLORTABLE.push_back(qColor);
     }
 
     return BITMAPCOLORTABLE;

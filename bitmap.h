@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <vector>
+#include <QColor>
 
 typedef struct tagBITMAPFILEHEADER {
     unsigned short bfType;
@@ -26,16 +27,9 @@ typedef struct tagBITMAPINFOHEADER {
     unsigned int biClrImportant;
 } BITMAPINFOHEADER;
 
-typedef struct tagRGBQUAD {
-    unsigned char rgbBlue;
-    unsigned char rgbGreen;
-    unsigned char rgbRed;
-    unsigned char rgbReserved;
-} RGBQUAD;
-
 BITMAPFILEHEADER* readBitmapFileHeader(std::ifstream& is);
 BITMAPINFOHEADER* readBitmapInfoHeader(std::ifstream& is);
-std::vector<RGBQUAD *> readBitmapColorTable(std::ifstream& is, int colorTableEntries);
+std::vector<QColor> readBitmapColorTable(std::ifstream& is, int colorTableEntries);
 std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPINFOHEADER* bitmapInfoHeader);
 
 bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength);

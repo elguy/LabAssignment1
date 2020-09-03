@@ -73,6 +73,8 @@ BITMAPINFOHEADER* readBitmapInfoHeader(std::ifstream& is) {
 }
 
 std::vector<QColor> readBitmapColorTable(std::ifstream& is, int colorTableEntries) {
+    is.seekg(14, std::ifstream::beg);
+
     std::vector<QColor> BITMAPCOLORTABLE;
 
     unsigned char rgbBlue;
@@ -95,7 +97,9 @@ std::vector<QColor> readBitmapColorTable(std::ifstream& is, int colorTableEntrie
     return BITMAPCOLORTABLE;
 }
 
-std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPINFOHEADER* bitmapInfoHeader) {
+std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader) {
+    is.seekg(bitmapFileHeader->bfOffBits, std::ifstream::beg);
+
     std::vector<unsigned char> BITMAPPIXELINDICES;
 
     unsigned char pixelIndex;

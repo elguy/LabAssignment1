@@ -39,8 +39,8 @@ BITMAPINFOHEADER *readBitmapInfoHeader(std::ifstream& is);
 std::vector<QColor> readBitmapColorTable(std::ifstream& is, BITMAPINFOHEADER *bitmapInfoHeader, int colorTableEntries);
 std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader);
 
-bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength);
-bool verifyBitmapInfoHeader(BITMAPINFOHEADER *bitmapInfoHeader);
+bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength, QString &errorMessage);
+bool verifyBitmapInfoHeader(BITMAPINFOHEADER *bitmapInfoHeader, QString &errorMessage);
 int getColorTableEntries(BITMAPINFOHEADER *bitmapInfoHeader);
 
 bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2);

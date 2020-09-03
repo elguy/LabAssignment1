@@ -26,11 +26,12 @@ void MainWindow::on_btnOpenBitmap_clicked()
 
      if (openFileDialog(bmpFilePath)) {
          bmpOriginal = new BITMAP;
-         openBitmap(bmpFilePath, *bmpOriginal);
 
-         setGraphicsView(*bmpOriginal, ui->gfxBitmap);
+         if (openBitmap(bmpFilePath, *bmpOriginal)) {
+            setGraphicsView(*bmpOriginal, ui->gfxBitmap);
 
-         ui->tabWidget->setCurrentIndex(0);
+            ui->tabWidget->setCurrentIndex(0);
+        }
      }
 }
 
@@ -40,13 +41,14 @@ void MainWindow::on_btnOpenOverlay_clicked()
 
     if (openFileDialog(bmpFilePath)) {
         bmpOverlay = new BITMAP;
-        openBitmap(bmpFilePath, *bmpOverlay);
 
-        setGraphicsView(*bmpOverlay, ui->gfxOverlay);
+        if (openBitmap(bmpFilePath, *bmpOverlay)) {
+            setGraphicsView(*bmpOverlay, ui->gfxOverlay);
 
-        ui->tabWidget->setCurrentIndex(1);
+            ui->tabWidget->setCurrentIndex(1);
 
-        generateOverlaidBitmap();
+            generateOverlaidBitmap();
+        }
     }
 }
 
@@ -89,16 +91,19 @@ bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
         bmpFile.seekg(0, std::ifstream::beg);
 
         BITMAPFILEHEADER *bitmapFileHeader = readBitmapFileHeader(bmpFile);
+        QString errorMessage;
 
-        if (!verifyBitmapFileHeader(bitmapFileHeader, fileLength)) {
+        if (!verifyBitmapFileHeader(bitmapFileHeader, fileLength, errorMessage)) {
             bmpFile.close();
+            showErrorMessage(errorMessage);
             return false;
         }
 
         BITMAPINFOHEADER *bitmapInfoHeader = readBitmapInfoHeader(bmpFile);
 
-        if (!verifyBitmapInfoHeader(bitmapInfoHeader)) {
+        if (!verifyBitmapInfoHeader(bitmapInfoHeader, errorMessage)) {
             bmpFile.close();
+            showErrorMessage(errorMessage);
             return false;
         }
 
@@ -107,6 +112,8 @@ bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
         std::vector<QColor> bitmapColorTable = readBitmapColorTable(bmpFile, bitmapInfoHeader, colorTableEntries);
 
         std::vector<unsigned char> bitmapPixelIndices = readBitmapPixelIndices(bmpFile, bitmapFileHeader, bitmapInfoHeader);
+
+        bmpFile.close();
 
         bitmap.bitmapFileHeader = bitmapFileHeader;
         bitmap.bitmapInfoHeader = bitmapInfoHeader;

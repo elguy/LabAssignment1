@@ -115,24 +115,24 @@ std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEH
     return BITMAPPIXELINDICES;
 }
 
-bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength) {
+bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength, QString &errorMessage) {
     if (fileLength != (int)bitmapFileHeader->bfSize) {
-        std::cout << "Error: File size mismatch between actual and header information." << std::endl;
+       errorMessage = "Error: File size mismatch between actual and header information.";
         return false;
     }
 
     return true;
 }
 
-bool verifyBitmapInfoHeader(BITMAPINFOHEADER *bitmapInfoHeader) {
+bool verifyBitmapInfoHeader(BITMAPINFOHEADER *bitmapInfoHeader, QString &errorMessage) {
     if (bitmapInfoHeader->biSize != 40) {
-        std::cout << "Error: Bitmap information header is not BITMAPINFOHEADER." << std::endl;
+        errorMessage = "Error: Bitmap information header is not BITMAPINFOHEADER.";
         return false;
     } else if (bitmapInfoHeader->biBitCount != 8) {
-        std::cout << "Error: Bitmap is not 8-bit." << std::endl;
+        errorMessage = "Error: Bitmap is not 8-bit.";
         return false;
     } else if (bitmapInfoHeader->biCompression != 0) {
-        std::cout << "Error: Bitmaps with compression are not supported." << std::endl;
+        errorMessage = "Error: Bitmaps with compression are not supported.";
         return false;
     }
 

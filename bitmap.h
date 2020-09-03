@@ -27,8 +27,15 @@ typedef struct tagBITMAPINFOHEADER {
     unsigned int biClrImportant;
 } BITMAPINFOHEADER;
 
-BITMAPFILEHEADER* readBitmapFileHeader(std::ifstream& is);
-BITMAPINFOHEADER* readBitmapInfoHeader(std::ifstream& is);
+typedef struct tagBITMAP {
+    BITMAPFILEHEADER *bitmapFileHeader;
+    BITMAPINFOHEADER *bitmapInfoHeader;
+    std::vector<QColor> bitmapColorTable;
+    std::vector<unsigned char> bitmapPixelIndices;
+} BITMAP;
+
+BITMAPFILEHEADER *readBitmapFileHeader(std::ifstream& is);
+BITMAPINFOHEADER *readBitmapInfoHeader(std::ifstream& is);
 std::vector<QColor> readBitmapColorTable(std::ifstream& is, int colorTableEntries);
 std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPINFOHEADER* bitmapInfoHeader);
 

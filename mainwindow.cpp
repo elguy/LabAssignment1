@@ -24,12 +24,22 @@ void MainWindow::on_btnOpenBitmap_clicked()
 {
      auto bmpFilePath = QFileDialog::getOpenFileName(this, tr("Open Bitmap Image"), "", tr("Bitmap Images (*.bmp)"));
 
-     openBitmap(bmpFilePath);
+     bmpOriginal = new BITMAP;
+     openBitmap(bmpFilePath, *bmpOriginal);
+     createQImage(*bmpOriginal, ui->gfxBitmap);
+
+     ui->tabWidget->setCurrentIndex(0);
 }
 
 void MainWindow::on_btnOpenOverlay_clicked()
 {
+    auto bmpFilePath = QFileDialog::getOpenFileName(this, tr("Open Bitmap Image"), "", tr("Bitmap Images (*.bmp)"));
 
+    bmpOverlay = new BITMAP;
+    openBitmap(bmpFilePath, *bmpOverlay);
+    createQImage(*bmpOverlay, ui->gfxOverlay);
+
+    ui->tabWidget->setCurrentIndex(1);
 }
 
 void MainWindow::on_btnSaveBitmap_clicked()
@@ -38,7 +48,7 @@ void MainWindow::on_btnSaveBitmap_clicked()
 }
 
 
-void MainWindow::openBitmap(QString filePath) {
+bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
     std::ifstream bmpFile(filePath.toStdString(), std::ifstream::binary);
 
     if (bmpFile) {
@@ -50,14 +60,14 @@ void MainWindow::openBitmap(QString filePath) {
 
         if (!verifyBitmapFileHeader(bitmapFileHeader, fileLength)) {
             bmpFile.close();
-            return;
+            return false;
         }
 
         BITMAPINFOHEADER *bitmapInfoHeader = readBitmapInfoHeader(bmpFile);
 
         if (!verifyBitmapInfoHeader(bitmapInfoHeader)) {
             bmpFile.close();
-            return;
+            return false;
         }
 
         int colorTableEntries = getColorTableEntries(bitmapInfoHeader);
@@ -66,22 +76,27 @@ void MainWindow::openBitmap(QString filePath) {
 
         std::vector<unsigned char> bitmapPixelIndices = readBitmapPixelIndices(bmpFile, bitmapInfoHeader);
 
-        createQImage(bitmapInfoHeader, bitmapColorTable, bitmapPixelIndices);
-    } else {
+        bitmap.bitmapFileHeader = bitmapFileHeader;
+        bitmap.bitmapInfoHeader = bitmapInfoHeader;
+        bitmap.bitmapColorTable = bitmapColorTable;
+        bitmap.bitmapPixelIndices = bitmapPixelIndices;
 
+        return true;
+    } else {
+        return false;
     }
 }
 
-void MainWindow::createQImage(BITMAPINFOHEADER *bitmapInfoHeader, std::vector<QColor> bitmapColorTable, std::vector<unsigned char> bitmapPixelIndices) {
-    QImage qImg(bitmapInfoHeader->biWidth, bitmapInfoHeader->biHeight, QImage::Format_RGB32);
+void MainWindow::createQImage(BITMAP &bitmap, QGraphicsView *qGraphicsView) {
+    QImage qImg(bitmap.bitmapInfoHeader->biWidth, bitmap.bitmapInfoHeader->biHeight, QImage::Format_RGB32);
 
     int index = 0;
-    for(int i = bitmapInfoHeader->biHeight - 1; i >= 0; i--) {
-        for (int j = 0; j < bitmapInfoHeader->biWidth; j++) {
+    for(int i = bitmap.bitmapInfoHeader->biHeight - 1; i >= 0; i--) {
+        for (int j = 0; j < bitmap.bitmapInfoHeader->biWidth; j++) {
 
-            unsigned char pixelIndex = bitmapPixelIndices[index];
+            unsigned char pixelIndex = bitmap.bitmapPixelIndices[index];
 
-            QColor rgb = bitmapColorTable[pixelIndex];
+            QColor rgb = bitmap.bitmapColorTable[pixelIndex];
 
 
             qImg.setPixel(j, i, rgb.rgba());
@@ -93,5 +108,5 @@ void MainWindow::createQImage(BITMAPINFOHEADER *bitmapInfoHeader, std::vector<QC
 
     QGraphicsScene *scene = new QGraphicsScene;
     scene->addPixmap(pixImg);
-    ui->gfxBitmap->setScene(scene);
+    qGraphicsView->setScene(scene);
 }

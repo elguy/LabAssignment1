@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGraphicsView>
 #include "bitmap.h"
 
 QT_BEGIN_NAMESPACE
@@ -24,8 +25,11 @@ private slots:
     void on_btnSaveBitmap_clicked();
 
 private:
-    void openBitmap(QString filePath);
-    void createQImage(BITMAPINFOHEADER *bitmapInfoHeader, std::vector<QColor> bitmapColorTable, std::vector<unsigned char> bitmapPixelIndices);
+    bool openBitmap(QString filePath, BITMAP &bitmap);
+    void createQImage(BITMAP &bitmap, QGraphicsView *qGraphicsView);
+    BITMAP *bmpOriginal;
+    BITMAP *bmpOverlay;
+    BITMAP *bmpOverlaid;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

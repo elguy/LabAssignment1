@@ -36,7 +36,7 @@ typedef struct tagBITMAP {
 
 BITMAPFILEHEADER *readBitmapFileHeader(std::ifstream& is);
 BITMAPINFOHEADER *readBitmapInfoHeader(std::ifstream& is);
-std::vector<QColor> readBitmapColorTable(std::ifstream& is, int colorTableEntries);
+std::vector<QColor> readBitmapColorTable(std::ifstream& is, BITMAPINFOHEADER *bitmapInfoHeader, int colorTableEntries);
 std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader);
 
 bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength);

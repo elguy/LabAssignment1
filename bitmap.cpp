@@ -32,6 +32,8 @@ BITMAPFILEHEADER* readBitmapFileHeader(std::ifstream& is) {
 BITMAPINFOHEADER* readBitmapInfoHeader(std::ifstream& is) {
     BITMAPINFOHEADER *bitmapInfoHeader;
 
+    is.seekg(14, std::ifstream::beg);
+
     unsigned int biSize;
     long biWidth;
     long biHeight;
@@ -72,10 +74,10 @@ BITMAPINFOHEADER* readBitmapInfoHeader(std::ifstream& is) {
     return bitmapInfoHeader;
 }
 
-std::vector<QColor> readBitmapColorTable(std::ifstream& is, int colorTableEntries) {
-    is.seekg(14, std::ifstream::beg);
-
+std::vector<QColor> readBitmapColorTable(std::ifstream& is, BITMAPINFOHEADER *bitmapInfoHeader, int colorTableEntries) {
     std::vector<QColor> BITMAPCOLORTABLE;
+
+    is.seekg(14 + bitmapInfoHeader->biSize, std::ifstream::beg);
 
     unsigned char rgbBlue;
     unsigned char rgbGreen;

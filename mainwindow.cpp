@@ -97,7 +97,7 @@ bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
 
         int colorTableEntries = getColorTableEntries(bitmapInfoHeader);
 
-        std::vector<QColor> bitmapColorTable = readBitmapColorTable(bmpFile, colorTableEntries);
+        std::vector<QColor> bitmapColorTable = readBitmapColorTable(bmpFile, bitmapInfoHeader, colorTableEntries);
 
         std::vector<unsigned char> bitmapPixelIndices = readBitmapPixelIndices(bmpFile, bitmapFileHeader, bitmapInfoHeader);
 

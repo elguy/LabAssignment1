@@ -72,6 +72,13 @@ bool MainWindow::saveFileDialog() {
     return true;
 }
 
+void MainWindow::showErrorMessage(QString errorMessage) {
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Icon::Critical);
+    msgBox.setWindowTitle("Error!");
+    msgBox.setText(errorMessage);
+    msgBox.exec();
+}
 
 bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
     std::ifstream bmpFile(filePath.toStdString(), std::ifstream::binary);

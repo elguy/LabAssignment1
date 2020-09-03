@@ -30,6 +30,7 @@ private:
     bool openBitmap(QString filePath, BITMAP &bitmap);
     void setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphicsView);
     void generateOverlaidBitmap();
+    void showErrorMessage(QString errorMessage);
     BITMAP *bmpOriginal;
     BITMAP *bmpOverlay;
     BITMAP *bmpOverlaid;

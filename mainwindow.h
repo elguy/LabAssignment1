@@ -29,6 +29,7 @@ private:
     bool saveFileDialog();
     bool openBitmap(QString filePath, BITMAP &bitmap);
     void setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphicsView);
+    void generateOverlaidBitmap();
     BITMAP *bmpOriginal;
     BITMAP *bmpOverlay;
     BITMAP *bmpOverlaid;

@@ -45,6 +45,8 @@ void MainWindow::on_btnOpenOverlay_clicked()
         setGraphicsView(*bmpOverlay, ui->gfxOverlay);
 
         ui->tabWidget->setCurrentIndex(1);
+
+        generateOverlaidBitmap();
     }
 }
 
@@ -132,4 +134,11 @@ void MainWindow::setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphicsView) {
     QGraphicsScene *scene = new QGraphicsScene;
     scene->addPixmap(pixImg);
     qGraphicsView->setScene(scene);
+}
+
+void MainWindow::generateOverlaidBitmap() {
+    //check if bitmap height x width are the same
+    //check if overlay contains entries in it's color table not present in the original's
+
+    compareBitmapDimensions(bmpOriginal, bmpOverlay);
 }

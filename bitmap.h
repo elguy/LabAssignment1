@@ -43,4 +43,6 @@ bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength);
 bool verifyBitmapInfoHeader(BITMAPINFOHEADER *bitmapInfoHeader);
 int getColorTableEntries(BITMAPINFOHEADER *bitmapInfoHeader);
 
+bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2);
+
 #endif // BITMAP_H

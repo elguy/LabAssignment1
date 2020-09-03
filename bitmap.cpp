@@ -144,3 +144,13 @@ int getColorTableEntries(BITMAPINFOHEADER *bitmapInfoHeader) {
 
     return colorTableEntries;
 }
+
+bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2) {
+    if (bmp1->bitmapInfoHeader->biWidth != bmp2->bitmapInfoHeader->biWidth
+            && bmp1->bitmapInfoHeader->biHeight != bmp2->bitmapInfoHeader->biHeight) {
+        std::cout << "Error: Images do not have the same dimensions." << std::endl;
+        return false;
+    }
+
+    return true;
+}

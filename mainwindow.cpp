@@ -28,7 +28,7 @@ void MainWindow::on_btnOpenBitmap_clicked()
          bmpOriginal = new BITMAP;
          openBitmap(bmpFilePath, *bmpOriginal);
 
-         createQImage(*bmpOriginal, ui->gfxBitmap);
+         setGraphicsView(*bmpOriginal, ui->gfxBitmap);
 
          ui->tabWidget->setCurrentIndex(0);
      }
@@ -42,7 +42,7 @@ void MainWindow::on_btnOpenOverlay_clicked()
         bmpOverlay = new BITMAP;
         openBitmap(bmpFilePath, *bmpOverlay);
 
-        createQImage(*bmpOverlay, ui->gfxOverlay);
+        setGraphicsView(*bmpOverlay, ui->gfxOverlay);
 
         ui->tabWidget->setCurrentIndex(1);
     }
@@ -67,7 +67,7 @@ bool MainWindow::openFileDialog(QString &filePath) {
 }
 
 bool MainWindow::saveFileDialog() {
-
+    return true;
 }
 
 
@@ -110,7 +110,7 @@ bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
     }
 }
 
-void MainWindow::createQImage(BITMAP &bitmap, QGraphicsView *qGraphicsView) {
+void MainWindow::setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphicsView) {
     QImage qImg(bitmap.bitmapInfoHeader->biWidth, bitmap.bitmapInfoHeader->biHeight, QImage::Format_RGB32);
 
     int index = 0;

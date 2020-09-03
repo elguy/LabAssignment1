@@ -28,7 +28,7 @@ private:
     bool openFileDialog(QString &filePath);
     bool saveFileDialog();
     bool openBitmap(QString filePath, BITMAP &bitmap);
-    void createQImage(BITMAP &bitmap, QGraphicsView *qGraphicsView);
+    void setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphicsView);
     BITMAP *bmpOriginal;
     BITMAP *bmpOverlay;
     BITMAP *bmpOverlaid;

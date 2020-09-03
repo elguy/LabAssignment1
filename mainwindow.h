@@ -25,6 +25,8 @@ private slots:
     void on_btnSaveBitmap_clicked();
 
 private:
+    bool openFileDialog(QString &filePath);
+    bool saveFileDialog();
     bool openBitmap(QString filePath, BITMAP &bitmap);
     void createQImage(BITMAP &bitmap, QGraphicsView *qGraphicsView);
     BITMAP *bmpOriginal;

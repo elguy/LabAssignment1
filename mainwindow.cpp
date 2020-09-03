@@ -22,28 +22,51 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_btnOpenBitmap_clicked()
 {
-     auto bmpFilePath = QFileDialog::getOpenFileName(this, tr("Open Bitmap Image"), "", tr("Bitmap Images (*.bmp)"));
+     QString bmpFilePath;
 
-     bmpOriginal = new BITMAP;
-     openBitmap(bmpFilePath, *bmpOriginal);
-     createQImage(*bmpOriginal, ui->gfxBitmap);
+     if (openFileDialog(bmpFilePath)) {
+         bmpOriginal = new BITMAP;
+         openBitmap(bmpFilePath, *bmpOriginal);
 
-     ui->tabWidget->setCurrentIndex(0);
+         createQImage(*bmpOriginal, ui->gfxBitmap);
+
+         ui->tabWidget->setCurrentIndex(0);
+     }
 }
 
 void MainWindow::on_btnOpenOverlay_clicked()
 {
-    auto bmpFilePath = QFileDialog::getOpenFileName(this, tr("Open Bitmap Image"), "", tr("Bitmap Images (*.bmp)"));
+    QString bmpFilePath;
 
-    bmpOverlay = new BITMAP;
-    openBitmap(bmpFilePath, *bmpOverlay);
-    createQImage(*bmpOverlay, ui->gfxOverlay);
+    if (openFileDialog(bmpFilePath)) {
+        bmpOverlay = new BITMAP;
+        openBitmap(bmpFilePath, *bmpOverlay);
 
-    ui->tabWidget->setCurrentIndex(1);
+        createQImage(*bmpOverlay, ui->gfxOverlay);
+
+        ui->tabWidget->setCurrentIndex(1);
+    }
 }
 
 void MainWindow::on_btnSaveBitmap_clicked()
 {
+
+}
+
+bool MainWindow::openFileDialog(QString &filePath) {
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setNameFilter(tr("Bitmap Images (*.bmp)"));
+
+    if (dialog.exec() && dialog.selectedFiles().length() > 0) {
+        filePath = dialog.selectedFiles()[0];
+        return true;
+    }
+
+    return false;
+}
+
+bool MainWindow::saveFileDialog() {
 
 }
 

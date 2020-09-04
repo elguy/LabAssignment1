@@ -221,5 +221,4 @@ void MainWindow::generateOverlaidBitmap() {
     ui->btnSaveBitmap->setEnabled(true);
     ui->tabWidget->setCurrentIndex(2);
     setGraphicsView(*bmpOverlaid, ui->gfxOverlaid);
-
 }

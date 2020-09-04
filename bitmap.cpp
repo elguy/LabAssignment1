@@ -219,11 +219,11 @@ bool mapPixelIndicesToColorTable(BITMAP *bmp1, BITMAP *bmp2, BITMAP *newBmp, std
 
 
 void constructBitmapFileHeader(BITMAP *newBmp) {
-    newBmp->bitmapFileHeader->bfSize = 19778; //'BM' bitmap magic
+    newBmp->bitmapFileHeader->bfType = 19778; //'BM' bitmap magic
     newBmp->bitmapFileHeader->bfSize = 14 + newBmp->bitmapInfoHeader->biSize + 4 * newBmp->bitmapColorTable.size() + newBmp->bitmapPixelIndices.size();
     newBmp->bitmapFileHeader->bfReserved1 = 0;
     newBmp->bitmapFileHeader->bfReserved2 = 0;
-    newBmp->bitmapFileHeader->bfOffBits = 14 + newBmp->bitmapInfoHeader->biSize;
+    newBmp->bitmapFileHeader->bfOffBits = 14 + newBmp->bitmapInfoHeader->biSize + 4 * newBmp->bitmapColorTable.size();
 }
 
 void constructBitmapInfoHeader(BITMAP *newBmp, long width, long height) {

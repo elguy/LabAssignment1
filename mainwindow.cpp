@@ -31,6 +31,7 @@ void MainWindow::on_btnOpenBitmap_clicked()
             setGraphicsView(*bmpOriginal, ui->gfxBitmap);
 
             ui->tabWidget->setCurrentIndex(0);
+            enableGenerateButton();
         }
      }
 }
@@ -46,9 +47,18 @@ void MainWindow::on_btnOpenOverlay_clicked()
             setGraphicsView(*bmpOverlay, ui->gfxOverlay);
 
             ui->tabWidget->setCurrentIndex(1);
-
-            generateOverlaidBitmap();
+            enableGenerateButton();
         }
+    }
+}
+
+void MainWindow::on_btnGenerateOverlaid_clicked()
+{
+    if (bmpOriginal != nullptr && bmpOverlay != nullptr) {
+        generateOverlaidBitmap();
+    } else {
+        //this shouldn't happen but catch it anyway
+        showErrorMessage("Either an original or an overlay bitmap has not yet been opened.");
     }
 }
 
@@ -80,6 +90,12 @@ void MainWindow::showErrorMessage(QString errorMessage) {
     msgBox.setWindowTitle("Error!");
     msgBox.setText(errorMessage);
     msgBox.exec();
+}
+
+void MainWindow::enableGenerateButton() {
+    if (bmpOriginal != nullptr && bmpOverlay != nullptr) {
+        ui->btnGenerateOverlaid->setEnabled(true);
+    }
 }
 
 bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {

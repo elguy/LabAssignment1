@@ -24,6 +24,8 @@ private slots:
 
     void on_btnSaveBitmap_clicked();
 
+    void on_btnGenerateOverlaid_clicked();
+
 private:
     bool openFileDialog(QString &filePath);
     bool saveFileDialog();
@@ -31,8 +33,9 @@ private:
     void setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphicsView);
     void generateOverlaidBitmap();
     void showErrorMessage(QString errorMessage);
-    BITMAP *bmpOriginal;
-    BITMAP *bmpOverlay;
+    void enableGenerateButton();
+    BITMAP *bmpOriginal = nullptr;
+    BITMAP *bmpOverlay = nullptr;
     BITMAP *bmpOverlaid;
     Ui::MainWindow *ui;
 };

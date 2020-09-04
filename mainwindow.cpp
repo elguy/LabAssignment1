@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <unordered_set>
 #include "bitmap.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -127,7 +128,9 @@ bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
 
         std::vector<QColor> bitmapColorTable = readBitmapColorTable(bmpFile, bitmapInfoHeader, colorTableEntries);
 
-        std::vector<unsigned char> bitmapPixelIndices = readBitmapPixelIndices(bmpFile, bitmapFileHeader, bitmapInfoHeader);
+        std::unordered_set<unsigned char> colorSet;
+
+        std::vector<unsigned char> bitmapPixelIndices = readBitmapPixelIndices(bmpFile, bitmapFileHeader, bitmapInfoHeader, colorSet);
 
         bmpFile.close();
 
@@ -135,6 +138,7 @@ bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
         bitmap.bitmapInfoHeader = bitmapInfoHeader;
         bitmap.bitmapColorTable = bitmapColorTable;
         bitmap.bitmapPixelIndices = bitmapPixelIndices;
+        bitmap.colorSet = colorSet;
 
         return true;
     } else {
@@ -170,5 +174,14 @@ void MainWindow::generateOverlaidBitmap() {
     //check if bitmap height x width are the same
     //check if overlay contains entries in it's color table not present in the original's
 
-    compareBitmapDimensions(bmpOriginal, bmpOverlay);
+    QString errorMessage;
+    if (!compareBitmapDimensions(bmpOriginal, bmpOverlay, errorMessage)) {
+        showErrorMessage(errorMessage);
+        return;
+    }
+
+    if (!compareColorTables(bmpOriginal, bmpOverlay, errorMessage)) {
+        showErrorMessage(errorMessage);
+        return;
+    }
 }

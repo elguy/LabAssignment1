@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <unordered_set>
 #include "bitmap.h"
 
 BITMAPFILEHEADER* readBitmapFileHeader(std::ifstream& is) {
@@ -99,7 +100,7 @@ std::vector<QColor> readBitmapColorTable(std::ifstream& is, BITMAPINFOHEADER *bi
     return BITMAPCOLORTABLE;
 }
 
-std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader) {
+std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader, std::unordered_set<unsigned char> &colorSet) {
     is.seekg(bitmapFileHeader->bfOffBits, std::ifstream::beg);
 
     std::vector<unsigned char> BITMAPPIXELINDICES;
@@ -109,15 +110,20 @@ std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEH
 
     for (int i = 0; i < numPixels; i++) {
         is.read(reinterpret_cast<char *>(&pixelIndex), sizeof(pixelIndex));
+
+        colorSet.insert(pixelIndex);
+
         BITMAPPIXELINDICES.push_back(pixelIndex);
     }
+
+    std::cout << colorSet.size() << std::endl;
 
     return BITMAPPIXELINDICES;
 }
 
 bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength, QString &errorMessage) {
     if (fileLength != (int)bitmapFileHeader->bfSize) {
-       errorMessage = "Error: File size mismatch between actual and header information.";
+       errorMessage = "File size mismatch between actual and header information.";
         return false;
     }
 
@@ -126,13 +132,13 @@ bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength, 
 
 bool verifyBitmapInfoHeader(BITMAPINFOHEADER *bitmapInfoHeader, QString &errorMessage) {
     if (bitmapInfoHeader->biSize != 40) {
-        errorMessage = "Error: Bitmap information header is not BITMAPINFOHEADER.";
+        errorMessage = "Bitmap information header is not BITMAPINFOHEADER.";
         return false;
     } else if (bitmapInfoHeader->biBitCount != 8) {
-        errorMessage = "Error: Bitmap is not 8-bit.";
+        errorMessage = "Bitmap is not 8-bit.";
         return false;
     } else if (bitmapInfoHeader->biCompression != 0) {
-        errorMessage = "Error: Bitmaps with compression are not supported.";
+        errorMessage = "Bitmaps with compression are not supported.";
         return false;
     }
 
@@ -151,11 +157,39 @@ int getColorTableEntries(BITMAPINFOHEADER *bitmapInfoHeader) {
     return colorTableEntries;
 }
 
-bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2) {
+bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage) {
     if (bmp1->bitmapInfoHeader->biWidth != bmp2->bitmapInfoHeader->biWidth
             && bmp1->bitmapInfoHeader->biHeight != bmp2->bitmapInfoHeader->biHeight) {
-        std::cout << "Error: Images do not have the same dimensions." << std::endl;
+        errorMessage = "Images do not have the same dimensions.";
         return false;
+    }
+
+    return true;
+}
+
+bool compareColorTables(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage) {
+    std::unordered_set<unsigned char> missingColors;
+
+    for (const auto &color: bmp2->colorSet) {
+        if (bmp1->colorSet.find(color) == bmp1->colorSet.end()) {
+            missingColors.insert(color);
+        }
+    }
+
+    if (missingColors.size() > 0) {
+        int availableColorSpace = 256 - bmp1->colorSet.size();
+
+        if (availableColorSpace + missingColors.size() > 256) {
+            std::cout << "no room in color table to overlay" << std::endl;
+            //error: too many colors to overlay
+        } else {
+            std::cout << "room in color table to insert overlays colors" << std::endl;
+            //we can put all of the overlay's colors into the original's color table
+        }
+    } else {
+        std::cout << "color tables contain all mutual colors" << std::endl;
+        //all the colors used in the overlay bitmap are already available in the original bitmap
+        //map them out and paint the pixels onto the original
     }
 
     return true;

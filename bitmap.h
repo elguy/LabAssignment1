@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <vector>
+#include <unordered_set>
 #include <QColor>
 
 typedef struct tagBITMAPFILEHEADER {
@@ -32,17 +33,19 @@ typedef struct tagBITMAP {
     BITMAPINFOHEADER *bitmapInfoHeader;
     std::vector<QColor> bitmapColorTable;
     std::vector<unsigned char> bitmapPixelIndices;
+    std::unordered_set<unsigned char> colorSet;
 } BITMAP;
 
 BITMAPFILEHEADER *readBitmapFileHeader(std::ifstream& is);
 BITMAPINFOHEADER *readBitmapInfoHeader(std::ifstream& is);
 std::vector<QColor> readBitmapColorTable(std::ifstream& is, BITMAPINFOHEADER *bitmapInfoHeader, int colorTableEntries);
-std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader);
+std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader, std::unordered_set<unsigned char> &colorSet);
 
 bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength, QString &errorMessage);
 bool verifyBitmapInfoHeader(BITMAPINFOHEADER *bitmapInfoHeader, QString &errorMessage);
 int getColorTableEntries(BITMAPINFOHEADER *bitmapInfoHeader);
 
-bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2);
+bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage);
+bool compareColorTables(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage);
 
 #endif // BITMAP_H

@@ -180,6 +180,7 @@ bool compareColorTables(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage) {
         int availableColorSpace = 256 - bmp1->colorSet.size();
 
         if (availableColorSpace + missingColors.size() > 256) {
+            std::cout << availableColorSpace << " " << missingColors.size();
             std::cout << "no room in color table to overlay" << std::endl;
             //error: too many colors to overlay
         } else {
@@ -193,4 +194,75 @@ bool compareColorTables(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage) {
     }
 
     return true;
+}
+/*
+typedef struct tagBITMAPFILEHEADER {
+    unsigned short bfType;
+    unsigned int bfSize;
+    unsigned short bfReserved1;
+    unsigned short bfReserved2;
+    unsigned int bfOffBits;
+} BITMAPFILEHEADER;
+
+typedef struct tagBITMAPINFOHEADER {
+    unsigned int biSize;
+    long biWidth;
+    long biHeight;
+    unsigned short biPlanes;
+    unsigned  short biBitCount;
+    unsigned int biCompression;
+    unsigned int biSizeImage;
+    long biXPelsPerMeter;
+    long biYPelsPerMeter;
+    unsigned int biClrUsed;
+    unsigned int biClrImportant;
+} BITMAPINFOHEADER;
+
+std::vector<QColor> bitmapColorTable;
+std::vector<unsigned char> bitmapPixelIndices;
+*/
+void saveBMP(BITMAP *bmp, std::string filename)
+{
+    //I just cast everything to char but I know that isn't what needs to be done
+    //didn't work without casting but I suspect I did the colortable wrong
+
+    std::ofstream outfile(filename, std::ofstream::binary);
+
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapFileHeader->bfType), sizeof(bmp->bitmapFileHeader->bfType));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapFileHeader->bfSize), sizeof(bmp->bitmapFileHeader->bfSize));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapFileHeader->bfReserved1), sizeof(bmp->bitmapFileHeader->bfReserved1));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapFileHeader->bfReserved2), sizeof(bmp->bitmapFileHeader->bfReserved2));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapFileHeader->bfOffBits), sizeof(bmp->bitmapFileHeader->bfOffBits));
+
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biSize), sizeof(bmp->bitmapInfoHeader->biSize));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biWidth), sizeof(bmp->bitmapInfoHeader->biWidth));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biHeight), sizeof(bmp->bitmapInfoHeader->biHeight));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biPlanes), sizeof(bmp->bitmapInfoHeader->biPlanes));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biBitCount), sizeof(bmp->bitmapInfoHeader->biBitCount));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biCompression), sizeof(bmp->bitmapInfoHeader->biCompression));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biSizeImage), sizeof(bmp->bitmapInfoHeader->biSizeImage));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biXPelsPerMeter), sizeof(bmp->bitmapInfoHeader->biXPelsPerMeter));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biYPelsPerMeter), sizeof(bmp->bitmapInfoHeader->biYPelsPerMeter));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biClrUsed), sizeof(bmp->bitmapInfoHeader->biClrUsed));
+    outfile.write(reinterpret_cast<const char *>(&bmp->bitmapInfoHeader->biClrImportant), sizeof(bmp->bitmapInfoHeader->biClrImportant));
+
+    for(QColor qc : bmp->bitmapColorTable)
+    {
+        unsigned char blue = (unsigned char)qc.blue();
+        unsigned char green = (unsigned char)qc.green();
+        unsigned char red = (unsigned char)qc.red();
+        unsigned char reserved = (unsigned char)0;
+
+        outfile.write(reinterpret_cast<char *>(&blue), sizeof(blue));
+        outfile.write(reinterpret_cast<char *>(&green), sizeof(blue));
+        outfile.write(reinterpret_cast<char *>(&red), sizeof(blue));
+        outfile.write(reinterpret_cast<char *>(&reserved), sizeof(reserved));
+    }
+
+    for(unsigned char c : bmp->bitmapPixelIndices)
+    {
+        outfile.write(reinterpret_cast<char *>(&c), sizeof(c));
+    }
+
+    outfile.close();
 }

@@ -34,9 +34,10 @@ private:
     void generateOverlaidBitmap();
     void showErrorMessage(QString errorMessage);
     void enableGenerateButton();
+    void enableSaveButton();
     BITMAP *bmpOriginal = nullptr;
     BITMAP *bmpOverlay = nullptr;
-    BITMAP *bmpOverlaid;
+    BITMAP bmpOverlaid;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

@@ -65,7 +65,8 @@ void MainWindow::on_btnGenerateOverlaid_clicked()
 
 void MainWindow::on_btnSaveBitmap_clicked()
 {
-
+    //Non-user selected filename, for now just to get the save working (and I don't know how to open file explorer thing)
+    saveBMP(&bmpOverlaid, "overlaid.bmp");
 }
 
 bool MainWindow::openFileDialog(QString &filePath) {
@@ -98,6 +99,7 @@ void MainWindow::enableGenerateButton() {
         ui->btnGenerateOverlaid->setEnabled(true);
     }
 }
+
 
 bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
     std::ifstream bmpFile(filePath.toStdString(), std::ifstream::binary);
@@ -184,4 +186,20 @@ void MainWindow::generateOverlaidBitmap() {
         showErrorMessage(errorMessage);
         return;
     }
+
+    bmpOverlaid = *bmpOriginal;
+    for(unsigned int i = 0; i < bmpOriginal->bitmapPixelIndices.size(); i++)
+    {
+        QColor rgb = bmpOverlay->bitmapColorTable[bmpOverlay->bitmapPixelIndices[i]];
+        if(!(rgb.red() == 255 && rgb.green() == 255 && rgb.blue() == 255))
+        {
+            bmpOverlaid.bitmapPixelIndices[i] = bmpOverlay->bitmapPixelIndices[i];
+        }
+    }
+    //*(MainWindow::bmpOverlaid) = newBMP;
+    //bmpOverlaid = newBMP;
+    ui->btnSaveBitmap->setEnabled(true);
+    ui->tabWidget->setCurrentIndex(2);
+    setGraphicsView(bmpOverlaid, ui->gfxOverlaid);
+
 }

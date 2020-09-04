@@ -1,10 +1,12 @@
 #ifndef BITMAP_H
 #define BITMAP_H
 
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <unordered_set>
 #include <QColor>
+
 
 typedef struct tagBITMAPFILEHEADER {
     unsigned short bfType;
@@ -47,5 +49,5 @@ int getColorTableEntries(BITMAPINFOHEADER *bitmapInfoHeader);
 
 bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage);
 bool compareColorTables(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage);
-
+void saveBMP(BITMAP *bmp, std::string filename);
 #endif // BITMAP_H

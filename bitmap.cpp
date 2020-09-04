@@ -100,7 +100,7 @@ std::vector<QColor> readBitmapColorTable(std::ifstream& is, BITMAPINFOHEADER *bi
     return BITMAPCOLORTABLE;
 }
 
-std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader, std::unordered_set<unsigned char> &colorSet) {
+std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader) {
     is.seekg(bitmapFileHeader->bfOffBits, std::ifstream::beg);
 
     std::vector<unsigned char> BITMAPPIXELINDICES;
@@ -111,12 +111,8 @@ std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEH
     for (int i = 0; i < numPixels; i++) {
         is.read(reinterpret_cast<char *>(&pixelIndex), sizeof(pixelIndex));
 
-        colorSet.insert(pixelIndex);
-
         BITMAPPIXELINDICES.push_back(pixelIndex);
     }
-
-    std::cout << colorSet.size() << std::endl;
 
     return BITMAPPIXELINDICES;
 }
@@ -164,36 +160,84 @@ bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage) 
         return false;
     }
 
+    return true;}
+
+bool constructNewColorTable(BITMAP *bmp1, BITMAP *bmp2, std::vector<QColor> &bitmapColorTable) {
+    std::unordered_set<QRgb> colorTable;
+
+    for (unsigned int i = 0; i < bmp1->bitmapPixelIndices.size(); i++) {
+        QRgb qRgb = bmp1->bitmapColorTable[bmp1->bitmapPixelIndices[i]].rgb();
+        colorTable.insert(qRgb);
+    }
+
+    for (unsigned int i = 0; i < bmp2->bitmapPixelIndices.size(); i++) {
+        QRgb qRgb = bmp2->bitmapColorTable[bmp2->bitmapPixelIndices[i]].rgb();
+        colorTable.insert(qRgb);
+    }
+
+    if (colorTable.size() > 256) {
+        std::cout << "more than 256 colors needed to overlay bitmap, its a no go :(" << std::endl;
+        return false;
+    }
+
+    bitmapColorTable.insert(bitmapColorTable.end(), colorTable.begin(), colorTable.end());
     return true;
 }
 
-bool compareColorTables(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage) {
-    std::unordered_set<unsigned char> missingColors;
+bool mapPixelIndicesToColorTable(BITMAP *bmp1, BITMAP *bmp2, BITMAP *newBmp, std::vector<QColor> &bitmapColorTable) {
 
-    for (const auto &color: bmp2->colorSet) {
-        if (bmp1->colorSet.find(color) == bmp1->colorSet.end()) {
-            missingColors.insert(color);
+    for (unsigned int i = 0; i < bmp1->bitmapPixelIndices.size(); i++) {
+        QColor qColor = bmp1->bitmapColorTable[bmp1->bitmapPixelIndices[i]];
+
+        auto itr = find(bitmapColorTable.begin(), bitmapColorTable.end(), qColor);
+
+        if (itr == bitmapColorTable.end()) {
+            std::cout << "color wasnt foud in color table, this shouldnt happen uh oh" << std::endl;
+            return false;
         }
+
+        newBmp->bitmapPixelIndices.push_back((unsigned char)std::distance(bitmapColorTable.begin(), itr));
     }
 
-    if (missingColors.size() > 0) {
-        int availableColorSpace = 256 - bmp1->colorSet.size();
+    for (unsigned int i = 0; i < bmp2->bitmapPixelIndices.size(); i++) {
+        QColor qColor = bmp2->bitmapColorTable[bmp2->bitmapPixelIndices[i]];
 
-        if (availableColorSpace + missingColors.size() > 256) {
-            std::cout << availableColorSpace << " " << missingColors.size();
-            std::cout << "no room in color table to overlay" << std::endl;
-            //error: too many colors to overlay
-        } else {
-            std::cout << "room in color table to insert overlays colors" << std::endl;
-            //we can put all of the overlay's colors into the original's color table
+        if (qColor.rgb() == 4294967295) continue;
+
+        auto itr = find(bitmapColorTable.begin(), bitmapColorTable.end(), qColor);
+
+        if (itr == bitmapColorTable.end()) {
+            std::cout << "color wasnt foud in color table, this shouldnt happen uh oh" << std::endl;
+            return false;
         }
-    } else {
-        std::cout << "color tables contain all mutual colors" << std::endl;
-        //all the colors used in the overlay bitmap are already available in the original bitmap
-        //map them out and paint the pixels onto the original
+
+        newBmp->bitmapPixelIndices[i] = (unsigned char)std::distance(bitmapColorTable.begin(), itr);
     }
 
-    return true;
+    return false;
+}
+
+
+void constructBitmapFileHeader(BITMAP *newBmp) {
+    newBmp->bitmapFileHeader->bfSize = 19778; //'BM' bitmap magic
+    newBmp->bitmapFileHeader->bfSize = 14 + newBmp->bitmapInfoHeader->biSize + 4 * newBmp->bitmapColorTable.size() + newBmp->bitmapPixelIndices.size();
+    newBmp->bitmapFileHeader->bfReserved1 = 0;
+    newBmp->bitmapFileHeader->bfReserved2 = 0;
+    newBmp->bitmapFileHeader->bfOffBits = 14 + newBmp->bitmapInfoHeader->biSize;
+}
+
+void constructBitmapInfoHeader(BITMAP *newBmp, long width, long height) {
+    newBmp->bitmapInfoHeader->biSize = 40;
+    newBmp->bitmapInfoHeader->biWidth = width;
+    newBmp->bitmapInfoHeader->biHeight = height;
+    newBmp->bitmapInfoHeader->biPlanes = 1;
+    newBmp->bitmapInfoHeader->biBitCount = 8;
+    newBmp->bitmapInfoHeader->biCompression = 0;
+    newBmp->bitmapInfoHeader->biSizeImage = width * height;
+    newBmp->bitmapInfoHeader->biXPelsPerMeter = 0;
+    newBmp->bitmapInfoHeader->biYPelsPerMeter = 0;
+    newBmp->bitmapInfoHeader->biClrUsed = newBmp->bitmapColorTable.size();
+    newBmp->bitmapInfoHeader->biClrImportant = 0;
 }
 
 void saveBitmap(BITMAP *bmp, QString filePath)

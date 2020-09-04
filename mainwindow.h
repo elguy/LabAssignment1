@@ -37,7 +37,7 @@ private:
     void enableSaveButton();
     BITMAP *bmpOriginal = nullptr;
     BITMAP *bmpOverlay = nullptr;
-    BITMAP bmpOverlaid;
+    BITMAP *bmpOverlaid = nullptr;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

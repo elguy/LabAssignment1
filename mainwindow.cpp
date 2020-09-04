@@ -68,7 +68,7 @@ void MainWindow::on_btnSaveBitmap_clicked()
     QString bmpFilePath;
 
     if (saveFileDialog(bmpFilePath)) {
-        saveBitmap(&bmpOverlaid, bmpFilePath);
+        saveBitmap(bmpOverlaid, bmpFilePath);
     }
 }
 
@@ -144,9 +144,7 @@ bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
 
         std::vector<QColor> bitmapColorTable = readBitmapColorTable(bmpFile, bitmapInfoHeader, colorTableEntries);
 
-        std::unordered_set<unsigned char> colorSet;
-
-        std::vector<unsigned char> bitmapPixelIndices = readBitmapPixelIndices(bmpFile, bitmapFileHeader, bitmapInfoHeader, colorSet);
+        std::vector<unsigned char> bitmapPixelIndices = readBitmapPixelIndices(bmpFile, bitmapFileHeader, bitmapInfoHeader);
 
         bmpFile.close();
 
@@ -154,7 +152,6 @@ bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
         bitmap.bitmapInfoHeader = bitmapInfoHeader;
         bitmap.bitmapColorTable = bitmapColorTable;
         bitmap.bitmapPixelIndices = bitmapPixelIndices;
-        bitmap.colorSet = colorSet;
 
         return true;
     } else {
@@ -196,12 +193,20 @@ void MainWindow::generateOverlaidBitmap() {
         return;
     }
 
-    if (!compareColorTables(bmpOriginal, bmpOverlay, errorMessage)) {
-        showErrorMessage(errorMessage);
-        return;
-    }
+    bmpOverlaid = new BITMAP;
 
-    bmpOverlaid = *bmpOriginal;
+    std::vector<QColor> newColorTable;
+    constructNewColorTable(bmpOriginal, bmpOverlay, bmpOverlaid->bitmapColorTable);
+
+    mapPixelIndicesToColorTable(bmpOriginal, bmpOverlay, bmpOverlaid, bmpOverlaid->bitmapColorTable);
+
+    bmpOverlaid->bitmapInfoHeader = new BITMAPINFOHEADER;
+    constructBitmapInfoHeader(bmpOverlaid, bmpOriginal->bitmapInfoHeader->biWidth, bmpOriginal->bitmapInfoHeader->biHeight);
+
+    bmpOverlaid->bitmapFileHeader = new BITMAPFILEHEADER;
+    constructBitmapFileHeader(bmpOverlaid);
+
+    /*bmpOverlaid = *bmpOriginal;
     for(unsigned int i = 0; i < bmpOriginal->bitmapPixelIndices.size(); i++)
     {
         QColor rgb = bmpOverlay->bitmapColorTable[bmpOverlay->bitmapPixelIndices[i]];
@@ -211,9 +216,10 @@ void MainWindow::generateOverlaidBitmap() {
         }
     }
     //*(MainWindow::bmpOverlaid) = newBMP;
-    //bmpOverlaid = newBMP;
+    //bmpOverlaid = newBMP;*/
+
     ui->btnSaveBitmap->setEnabled(true);
     ui->tabWidget->setCurrentIndex(2);
-    setGraphicsView(bmpOverlaid, ui->gfxOverlaid);
+    setGraphicsView(*bmpOverlaid, ui->gfxOverlaid);
 
 }

@@ -21,7 +21,7 @@ typedef struct tagBITMAPINFOHEADER {
     long biWidth;
     long biHeight;
     unsigned short biPlanes;
-    unsigned  short biBitCount;
+    unsigned short biBitCount;
     unsigned int biCompression;
     unsigned int biSizeImage;
     long biXPelsPerMeter;
@@ -35,19 +35,22 @@ typedef struct tagBITMAP {
     BITMAPINFOHEADER *bitmapInfoHeader;
     std::vector<QColor> bitmapColorTable;
     std::vector<unsigned char> bitmapPixelIndices;
-    std::unordered_set<unsigned char> colorSet;
 } BITMAP;
 
 BITMAPFILEHEADER *readBitmapFileHeader(std::ifstream& is);
 BITMAPINFOHEADER *readBitmapInfoHeader(std::ifstream& is);
 std::vector<QColor> readBitmapColorTable(std::ifstream& is, BITMAPINFOHEADER *bitmapInfoHeader, int colorTableEntries);
-std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader, std::unordered_set<unsigned char> &colorSet);
+std::vector<unsigned char> readBitmapPixelIndices(std::ifstream& is, BITMAPFILEHEADER *bitmapFileHeader, BITMAPINFOHEADER* bitmapInfoHeader);
 
 bool verifyBitmapFileHeader(BITMAPFILEHEADER *bitmapFileHeader, int fileLength, QString &errorMessage);
 bool verifyBitmapInfoHeader(BITMAPINFOHEADER *bitmapInfoHeader, QString &errorMessage);
 int getColorTableEntries(BITMAPINFOHEADER *bitmapInfoHeader);
 
 bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage);
-bool compareColorTables(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage);
+bool constructNewColorTable(BITMAP *bmp1, BITMAP *bmp2, std::vector<QColor> &bitmapColorTable);
+bool mapPixelIndicesToColorTable(BITMAP *bmp1, BITMAP *bmp2, BITMAP *newBmp, std::vector<QColor> &bitmapColorTable);
+void constructBitmapFileHeader(BITMAP *newBmp);
+void constructBitmapInfoHeader(BITMAP *newBmp, long width, long height);
+
 void saveBitmap(BITMAP *bmp, QString filePath);
 #endif // BITMAP_H

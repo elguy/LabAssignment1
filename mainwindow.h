@@ -28,7 +28,7 @@ private slots:
 
 private:
     bool openFileDialog(QString &filePath);
-    bool saveFileDialog();
+    bool saveFileDialog(QString &filepath);
     bool openBitmap(QString filePath, BITMAP &bitmap);
     void setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphicsView);
     void generateOverlaidBitmap();

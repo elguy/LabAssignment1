@@ -65,12 +65,16 @@ void MainWindow::on_btnGenerateOverlaid_clicked()
 
 void MainWindow::on_btnSaveBitmap_clicked()
 {
-    //Non-user selected filename, for now just to get the save working (and I don't know how to open file explorer thing)
-    saveBMP(&bmpOverlaid, "overlaid.bmp");
+    QString bmpFilePath;
+
+    if (saveFileDialog(bmpFilePath)) {
+        saveBitmap(&bmpOverlaid, bmpFilePath);
+    }
 }
 
 bool MainWindow::openFileDialog(QString &filePath) {
     QFileDialog dialog(this);
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setNameFilter(tr("Bitmap Images (*.bmp)"));
 
@@ -82,8 +86,18 @@ bool MainWindow::openFileDialog(QString &filePath) {
     return false;
 }
 
-bool MainWindow::saveFileDialog() {
-    return true;
+bool MainWindow::saveFileDialog(QString &filePath) {
+    QFileDialog dialog(this);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setNameFilter(tr("Bitmap Images (*.bmp)"));
+
+    if (dialog.exec() && dialog.selectedFiles().length() > 0) {
+        filePath = dialog.selectedFiles()[0];
+        return true;
+    }
+
+    return false;
 }
 
 void MainWindow::showErrorMessage(QString errorMessage) {

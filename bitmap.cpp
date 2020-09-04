@@ -195,38 +195,10 @@ bool compareColorTables(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage) {
 
     return true;
 }
-/*
-typedef struct tagBITMAPFILEHEADER {
-    unsigned short bfType;
-    unsigned int bfSize;
-    unsigned short bfReserved1;
-    unsigned short bfReserved2;
-    unsigned int bfOffBits;
-} BITMAPFILEHEADER;
 
-typedef struct tagBITMAPINFOHEADER {
-    unsigned int biSize;
-    long biWidth;
-    long biHeight;
-    unsigned short biPlanes;
-    unsigned  short biBitCount;
-    unsigned int biCompression;
-    unsigned int biSizeImage;
-    long biXPelsPerMeter;
-    long biYPelsPerMeter;
-    unsigned int biClrUsed;
-    unsigned int biClrImportant;
-} BITMAPINFOHEADER;
-
-std::vector<QColor> bitmapColorTable;
-std::vector<unsigned char> bitmapPixelIndices;
-*/
-void saveBMP(BITMAP *bmp, std::string filename)
+void saveBitmap(BITMAP *bmp, QString filePath)
 {
-    //I just cast everything to char but I know that isn't what needs to be done
-    //didn't work without casting but I suspect I did the colortable wrong
-
-    std::ofstream outfile(filename, std::ofstream::binary);
+    std::ofstream outfile(filePath.toStdString(), std::ofstream::binary);
 
     outfile.write(reinterpret_cast<const char *>(&bmp->bitmapFileHeader->bfType), sizeof(bmp->bitmapFileHeader->bfType));
     outfile.write(reinterpret_cast<const char *>(&bmp->bitmapFileHeader->bfSize), sizeof(bmp->bitmapFileHeader->bfSize));

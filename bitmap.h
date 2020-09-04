@@ -49,5 +49,5 @@ int getColorTableEntries(BITMAPINFOHEADER *bitmapInfoHeader);
 
 bool compareBitmapDimensions(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage);
 bool compareColorTables(BITMAP *bmp1, BITMAP *bmp2, QString &errorMessage);
-void saveBMP(BITMAP *bmp, std::string filename);
+void saveBitmap(BITMAP *bmp, QString filePath);
 #endif // BITMAP_H

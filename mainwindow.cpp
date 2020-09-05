@@ -24,31 +24,37 @@ MainWindow::~MainWindow()
 void MainWindow::on_btnOpenBitmap_clicked()
 {
      QString bmpFilePath;
+     QString errorMessage;
 
      if (openFileDialog(bmpFilePath)) {
          bmpOriginal = new BITMAP;
 
-         if (openBitmap(bmpFilePath, *bmpOriginal)) {
+         if (openBitmap(bmpFilePath, *bmpOriginal, errorMessage)) {
             setGraphicsView(*bmpOriginal, ui->gfxBitmap);
 
             ui->tabWidget->setCurrentIndex(0);
             enableGenerateButton();
-        }
+        } else {
+             showErrorMessage(errorMessage);
+         }
      }
 }
 
 void MainWindow::on_btnOpenOverlay_clicked()
 {
     QString bmpFilePath;
+    QString errorMessage;
 
     if (openFileDialog(bmpFilePath)) {
         bmpOverlay = new BITMAP;
 
-        if (openBitmap(bmpFilePath, *bmpOverlay)) {
+        if (openBitmap(bmpFilePath, *bmpOverlay, errorMessage)) {
             setGraphicsView(*bmpOverlay, ui->gfxOverlay);
 
             ui->tabWidget->setCurrentIndex(1);
             enableGenerateButton();
+        } else {
+            showErrorMessage(errorMessage);
         }
     }
 }
@@ -111,51 +117,6 @@ void MainWindow::showErrorMessage(QString errorMessage) {
 void MainWindow::enableGenerateButton() {
     if (bmpOriginal != nullptr && bmpOverlay != nullptr) {
         ui->btnGenerateOverlaid->setEnabled(true);
-    }
-}
-
-
-bool MainWindow::openBitmap(QString filePath, BITMAP &bitmap) {
-    std::ifstream bmpFile(filePath.toStdString(), std::ifstream::binary);
-
-    if (bmpFile) {
-        bmpFile.seekg(0, std::ifstream::end);
-        int fileLength = bmpFile.tellg();
-        bmpFile.seekg(0, std::ifstream::beg);
-
-        BITMAPFILEHEADER *bitmapFileHeader = readBitmapFileHeader(bmpFile);
-        QString errorMessage;
-
-        if (!verifyBitmapFileHeader(bitmapFileHeader, fileLength, errorMessage)) {
-            bmpFile.close();
-            showErrorMessage(errorMessage);
-            return false;
-        }
-
-        BITMAPINFOHEADER *bitmapInfoHeader = readBitmapInfoHeader(bmpFile);
-
-        if (!verifyBitmapInfoHeader(bitmapInfoHeader, errorMessage)) {
-            bmpFile.close();
-            showErrorMessage(errorMessage);
-            return false;
-        }
-
-        int colorTableEntries = getColorTableEntries(bitmapInfoHeader);
-
-        std::vector<QColor> bitmapColorTable = readBitmapColorTable(bmpFile, bitmapInfoHeader, colorTableEntries);
-
-        std::vector<unsigned char> bitmapPixelIndices = readBitmapPixelIndices(bmpFile, bitmapFileHeader, bitmapInfoHeader);
-
-        bmpFile.close();
-
-        bitmap.bitmapFileHeader = bitmapFileHeader;
-        bitmap.bitmapInfoHeader = bitmapInfoHeader;
-        bitmap.bitmapColorTable = bitmapColorTable;
-        bitmap.bitmapPixelIndices = bitmapPixelIndices;
-
-        return true;
-    } else {
-        return false;
     }
 }
 

@@ -240,6 +240,47 @@ void constructBitmapInfoHeader(BITMAP *newBmp, long width, long height) {
     newBmp->bitmapInfoHeader->biClrImportant = 0;
 }
 
+bool openBitmap(QString filePath, BITMAP &bitmap, QString &errorMessage) {
+    std::ifstream bmpFile(filePath.toStdString(), std::ifstream::binary);
+
+    if (bmpFile) {
+        bmpFile.seekg(0, std::ifstream::end);
+        int fileLength = bmpFile.tellg();
+        bmpFile.seekg(0, std::ifstream::beg);
+
+        BITMAPFILEHEADER *bitmapFileHeader = readBitmapFileHeader(bmpFile);
+
+        if (!verifyBitmapFileHeader(bitmapFileHeader, fileLength, errorMessage)) {
+            bmpFile.close();
+            return false;
+        }
+
+        BITMAPINFOHEADER *bitmapInfoHeader = readBitmapInfoHeader(bmpFile);
+
+        if (!verifyBitmapInfoHeader(bitmapInfoHeader, errorMessage)) {
+            bmpFile.close();
+            return false;
+        }
+
+        int colorTableEntries = getColorTableEntries(bitmapInfoHeader);
+
+        std::vector<QColor> bitmapColorTable = readBitmapColorTable(bmpFile, bitmapInfoHeader, colorTableEntries);
+
+        std::vector<unsigned char> bitmapPixelIndices = readBitmapPixelIndices(bmpFile, bitmapFileHeader, bitmapInfoHeader);
+
+        bmpFile.close();
+
+        bitmap.bitmapFileHeader = bitmapFileHeader;
+        bitmap.bitmapInfoHeader = bitmapInfoHeader;
+        bitmap.bitmapColorTable = bitmapColorTable;
+        bitmap.bitmapPixelIndices = bitmapPixelIndices;
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void saveBitmap(BITMAP *bmp, QString filePath)
 {
     std::ofstream outfile(filePath.toStdString(), std::ofstream::binary);

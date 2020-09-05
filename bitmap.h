@@ -52,5 +52,6 @@ bool mapPixelIndicesToColorTable(BITMAP *bmp1, BITMAP *bmp2, BITMAP *newBmp, std
 void constructBitmapFileHeader(BITMAP *newBmp);
 void constructBitmapInfoHeader(BITMAP *newBmp, long width, long height);
 
+bool openBitmap(QString filePath, BITMAP &bitmap, QString &errorMessage);
 void saveBitmap(BITMAP *bmp, QString filePath);
 #endif // BITMAP_H

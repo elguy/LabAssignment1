@@ -4,7 +4,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <unordered_set>
 #include "bitmap.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -145,9 +144,6 @@ void MainWindow::setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphicsView) {
 }
 
 void MainWindow::generateOverlaidBitmap() {
-    //check if bitmap height x width are the same
-    //check if overlay contains entries in it's color table not present in the original's
-
     QString errorMessage;
     if (!compareBitmapDimensions(bmpOriginal, bmpOverlay, errorMessage)) {
         showErrorMessage(errorMessage);
@@ -166,18 +162,6 @@ void MainWindow::generateOverlaidBitmap() {
 
     bmpOverlaid->bitmapFileHeader = new BITMAPFILEHEADER;
     constructBitmapFileHeader(bmpOverlaid);
-
-    /*bmpOverlaid = *bmpOriginal;
-    for(unsigned int i = 0; i < bmpOriginal->bitmapPixelIndices.size(); i++)
-    {
-        QColor rgb = bmpOverlay->bitmapColorTable[bmpOverlay->bitmapPixelIndices[i]];
-        if(!(rgb.red() == 255 && rgb.green() == 255 && rgb.blue() == 255))
-        {
-            bmpOverlaid.bitmapPixelIndices[i] = bmpOverlay->bitmapPixelIndices[i];
-        }
-    }
-    //*(MainWindow::bmpOverlaid) = newBMP;
-    //bmpOverlaid = newBMP;*/
 
     ui->btnSaveBitmap->setEnabled(true);
     ui->tabWidget->setCurrentIndex(2);

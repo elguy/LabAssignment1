@@ -9,16 +9,22 @@ CONFIG += c++14
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    adjustmentswindow.cpp \
     bitmap.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    overlaywindow.cpp
 
 HEADERS += \
+    adjustmentswindow.h \
     bitmap.h \
-    mainwindow.h
+    mainwindow.h \
+    overlaywindow.h
 
 FORMS += \
-    mainwindow.ui
+    adjustmentswindow.ui \
+    mainwindow.ui \
+    overlaywindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

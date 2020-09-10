@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include <unordered_set>
-#include "bitmap.h"
+#include "headers/bitmap.h"
 
 BITMAPFILEHEADER* readBitmapFileHeader(std::ifstream& is) {
     BITMAPFILEHEADER* bitmapFileHeader;

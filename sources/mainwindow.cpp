@@ -1,6 +1,6 @@
-#include "adjustmentswindow.h"
-#include "mainwindow.h"
-#include "overlaywindow.h"
+#include "headers/adjustmentswindow.h"
+#include "headers/mainwindow.h"
+#include "headers/overlaywindow.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :

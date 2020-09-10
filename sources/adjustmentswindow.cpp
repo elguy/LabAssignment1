@@ -1,4 +1,4 @@
-#include "adjustmentswindow.h"
+#include "headers/adjustmentswindow.h"
 #include "ui_adjustmentswindow.h"
 
 AdjustmentsWindow::AdjustmentsWindow(QWidget *parent) :

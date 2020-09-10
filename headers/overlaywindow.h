@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QGraphicsView>
-#include "bitmap.h"
+#include "headers/bitmap.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class OverlayWindow; }

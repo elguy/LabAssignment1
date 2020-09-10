@@ -4,8 +4,8 @@
 
 #include <fstream>
 #include <iostream>
-#include "bitmap.h"
-#include "overlaywindow.h"
+#include "headers/bitmap.h"
+#include "headers/overlaywindow.h"
 #include "ui_overlaywindow.h"
 
 OverlayWindow::OverlayWindow(QWidget *parent)

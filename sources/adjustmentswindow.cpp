@@ -7,6 +7,7 @@ AdjustmentsWindow::AdjustmentsWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::AdjustmentsWindow)
 {
+    adjustedColorTable.reserve(256);
     ui->setupUi(this);
 }
 

@@ -217,6 +217,32 @@ bool mapPixelIndicesToColorTable(BITMAP *bmp1, BITMAP *bmp2, BITMAP *newBmp, std
     return false;
 }
 
+void adjustBrigtness(BITMAP *bmp, std::vector<QColor> &adjustedColorTable, int adjustFactor) {
+    for (unsigned int i = 0; i < bmp->bitmapColorTable.size(); i++) {
+        adjustedColorTable[i].setRed(truncate(bmp->bitmapColorTable[i].red() + adjustFactor));
+        adjustedColorTable[i].setGreen(truncate(bmp->bitmapColorTable[i].green() + adjustFactor));
+        adjustedColorTable[i].setBlue(truncate(bmp->bitmapColorTable[i].blue() + adjustFactor));
+    }
+
+    /*for (unsigned int i = 0; i < bmp->bitmapPixelIndices.size(); i++) {
+        int currentIndex = bmp->bitmapPixelIndices[i];
+
+        if (i < 10) std::cout << currentIndex << ", " << (int)truncate(currentIndex + adjustFactor) << std::endl;
+
+        bmp->bitmapPixelIndices[i] = bmp->bitmapPixelIndices[truncate(currentIndex + adjustFactor)];
+    }*/
+}
+
+unsigned char truncate(int value) {
+    if (value > 255) {
+        return 255;
+    } else if (value < 0) {
+        return 0;
+    }
+
+    return value;
+}
+
 
 void constructBitmapFileHeader(BITMAP *newBmp) {
     newBmp->bitmapFileHeader->bfType = 19778; //'BM' bitmap magic

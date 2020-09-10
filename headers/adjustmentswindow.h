@@ -33,10 +33,12 @@ private slots:
 private:
     Ui::AdjustmentsWindow *ui;
     BITMAP *bmpBitmap = nullptr;
+    std::vector<QColor> adjustedColorTable;
     void showErrorMessage(QString errorMessage);
     bool openFileDialog(QString &filePath);
-    void setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphicsView);
+    void setGraphicsView(BITMAP &bitmap, std::vector<QColor> adjustedColorTable, QGraphicsView *qGraphicsView);
     bool saveFileDialog(QString &filePath);
+    void enableControls();
 };
 
 #endif // ADJUSTMENTSWINDOW_H

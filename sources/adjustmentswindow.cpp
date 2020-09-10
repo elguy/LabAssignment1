@@ -24,6 +24,9 @@ void AdjustmentsWindow::on_sldrBrightness_sliderMoved(int position)
     }
 
     ui->lblBrightnessValue->setText(brightnessValue);
+
+    adjustBrigtness(bmpBitmap, adjustedColorTable, ui->sldrBrightness->sliderPosition());
+    setGraphicsView(*bmpBitmap, adjustedColorTable, ui->gfxBitmap);
 }
 
 void AdjustmentsWindow::on_sldrContrast_sliderMoved(int position)
@@ -35,6 +38,9 @@ void AdjustmentsWindow::on_sldrContrast_sliderMoved(int position)
     }
 
     ui->lblContrastValue->setText(contrastValue);
+
+    //TODO: implement code to change contrast
+
 }
 
 void AdjustmentsWindow::on_btnOpenBitmap_clicked()
@@ -46,7 +52,9 @@ void AdjustmentsWindow::on_btnOpenBitmap_clicked()
         bmpBitmap = new BITMAP;
 
         if (openBitmap(bmpFilePath, *bmpBitmap, errorMessage)) {
-           setGraphicsView(*bmpBitmap, ui->gfxBitmap);
+           copy(bmpBitmap->bitmapColorTable.begin(), bmpBitmap->bitmapColorTable.end(), std::back_inserter(adjustedColorTable));
+           setGraphicsView(*bmpBitmap, adjustedColorTable, ui->gfxBitmap);
+           enableControls();
        } else {
             showErrorMessage(errorMessage);
         }
@@ -58,18 +66,15 @@ void AdjustmentsWindow::on_btnSaveBitmap_clicked()
     QString bmpFilePath;
 
     if (saveFileDialog(bmpFilePath)) {
+        bmpBitmap->bitmapColorTable = adjustedColorTable;
         saveBitmap(bmpBitmap, bmpFilePath);
     }
 }
 
-void AdjustmentsWindow::on_sldrBrightness_sliderReleased()
-{
-    //TODO: implement code to change brightness
-}
-
-void AdjustmentsWindow::on_sldrContrast_sliderReleased()
-{
-    //TODO: implement code to change contrast
+void AdjustmentsWindow::enableControls() {
+    ui->btnSaveBitmap->setEnabled(true);
+    ui->sldrBrightness->setEnabled(true);
+    ui->sldrContrast->setEnabled(true);
 }
 
 void AdjustmentsWindow::showErrorMessage(QString errorMessage) {
@@ -108,7 +113,7 @@ bool AdjustmentsWindow::saveFileDialog(QString &filePath) {
     return false;
 }
 
-void AdjustmentsWindow::setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphicsView) {
+void AdjustmentsWindow::setGraphicsView(BITMAP &bitmap,  std::vector<QColor> adjustedColorTable, QGraphicsView *qGraphicsView) {
     QImage qImg(bitmap.bitmapInfoHeader->biWidth, bitmap.bitmapInfoHeader->biHeight, QImage::Format_RGB32);
 
     int index = 0;
@@ -117,7 +122,7 @@ void AdjustmentsWindow::setGraphicsView(BITMAP &bitmap, QGraphicsView *qGraphics
 
             unsigned char pixelIndex = bitmap.bitmapPixelIndices[index];
 
-            QColor rgb = bitmap.bitmapColorTable[pixelIndex];
+            QColor rgb = adjustedColorTable[pixelIndex];
 
 
             qImg.setPixel(j, i, rgb.rgba());

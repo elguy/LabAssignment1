@@ -44,6 +44,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="btnSaveBitmap">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Save Bitmap</string>
         </property>
@@ -60,6 +63,9 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QSlider" name="sldrBrightness">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimum">
            <number>-128</number>
           </property>
@@ -91,6 +97,9 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QSlider" name="sldrContrast">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimum">
            <number>-128</number>
           </property>

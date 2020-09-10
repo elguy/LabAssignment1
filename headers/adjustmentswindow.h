@@ -26,10 +26,6 @@ private slots:
 
     void on_btnSaveBitmap_clicked();
 
-    void on_sldrBrightness_sliderReleased();
-
-    void on_sldrContrast_sliderReleased();
-
 private:
     Ui::AdjustmentsWindow *ui;
     BITMAP *bmpBitmap = nullptr;

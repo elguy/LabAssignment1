@@ -219,9 +219,9 @@ bool mapPixelIndicesToColorTable(BITMAP *bmp1, BITMAP *bmp2, BITMAP *newBmp, std
 
 void adjustBrigtness(BITMAP *bmp, std::vector<QColor> &adjustedColorTable, int adjustFactor) {
     for (unsigned int i = 0; i < bmp->bitmapColorTable.size(); i++) {
-        adjustedColorTable[i].setRed(truncate(bmp->bitmapColorTable[i].red() + adjustFactor));
-        adjustedColorTable[i].setGreen(truncate(bmp->bitmapColorTable[i].green() + adjustFactor));
-        adjustedColorTable[i].setBlue(truncate(bmp->bitmapColorTable[i].blue() + adjustFactor));
+        adjustedColorTable[i].setRed(truncate(adjustedColorTable[i].red() + adjustFactor));
+        adjustedColorTable[i].setGreen(truncate(adjustedColorTable[i].green() + adjustFactor));
+        adjustedColorTable[i].setBlue(truncate(adjustedColorTable[i].blue() + adjustFactor));
     }
 
     /*for (unsigned int i = 0; i < bmp->bitmapPixelIndices.size(); i++) {
@@ -232,6 +232,28 @@ void adjustBrigtness(BITMAP *bmp, std::vector<QColor> &adjustedColorTable, int a
         bmp->bitmapPixelIndices[i] = bmp->bitmapPixelIndices[truncate(currentIndex + adjustFactor)];
     }*/
 }
+void adjustContrast(BITMAP *bmp, std::vector<QColor> &adjustedColorTable, int adjustFactor) {
+    std::vector<int> histogram(256,0);
+    std::vector<float> cumulative_probability(256,0);
+    std::vector<int> hist_equalized(256,0);
+    for(unsigned int i = 0; i < bmp->bitmapPixelIndices.size(); i++)
+    {
+        histogram[bmp->bitmapColorTable[bmp->bitmapPixelIndices[i]].red()]++;
+    }
+    for(unsigned int i = 0; i < 256; i++)
+    {
+        cumulative_probability[i] = ((float)histogram[i] / (float)bmp->bitmapPixelIndices.size()) + (i > 0)*cumulative_probability[i-1];
+        hist_equalized[i] = floor((adjustFactor-1)*cumulative_probability[i]);
+    }
+    for(unsigned int i = 0; i < bmp->bitmapColorTable.size(); i++)
+    {
+        adjustedColorTable[i].setRed(hist_equalized[bmp->bitmapColorTable[i].red()]);
+        adjustedColorTable[i].setGreen(hist_equalized[bmp->bitmapColorTable[i].red()]);
+        adjustedColorTable[i].setBlue(hist_equalized[bmp->bitmapColorTable[i].red()]);
+    }
+}
+
+
 
 unsigned char truncate(int value) {
     if (value > 255) {

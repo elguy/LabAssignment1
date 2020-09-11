@@ -101,9 +101,12 @@
            <bool>false</bool>
           </property>
           <property name="minimum">
-           <number>-128</number>
+           <number>1</number>
           </property>
           <property name="maximum">
+           <number>256</number>
+          </property>
+          <property name="value">
            <number>128</number>
           </property>
           <property name="orientation">

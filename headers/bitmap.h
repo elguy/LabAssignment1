@@ -52,6 +52,7 @@ bool mapPixelIndicesToColorTable(BITMAP *bmp1, BITMAP *bmp2, BITMAP *newBmp, std
 void constructBitmapFileHeader(BITMAP *newBmp);
 void constructBitmapInfoHeader(BITMAP *newBmp, long width, long height);
 void adjustBrigtness(BITMAP *bmp, std::vector<QColor> &adjustedColorTable, int adjustFactor);
+void adjustContrast(BITMAP *bmp, std::vector<QColor> &adjustedColorTable, int adjustFactor);
 unsigned char truncate(int value);
 
 bool openBitmap(QString filePath, BITMAP &bitmap, QString &errorMessage);

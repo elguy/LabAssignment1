@@ -26,6 +26,7 @@ void AdjustmentsWindow::on_sldrBrightness_sliderMoved(int position)
 
     ui->lblBrightnessValue->setText(brightnessValue);
 
+    adjustContrast(bmpBitmap, adjustedColorTable, ui->sldrContrast->sliderPosition());
     adjustBrigtness(bmpBitmap, adjustedColorTable, ui->sldrBrightness->sliderPosition());
     setGraphicsView(*bmpBitmap, adjustedColorTable, ui->gfxBitmap);
 }
@@ -41,6 +42,9 @@ void AdjustmentsWindow::on_sldrContrast_sliderMoved(int position)
     ui->lblContrastValue->setText(contrastValue);
 
     //TODO: implement code to change contrast
+    adjustContrast(bmpBitmap, adjustedColorTable, ui->sldrContrast->sliderPosition());
+    adjustBrigtness(bmpBitmap, adjustedColorTable, ui->sldrBrightness->sliderPosition());
+    setGraphicsView(*bmpBitmap, adjustedColorTable, ui->gfxBitmap);
 
 }
 
